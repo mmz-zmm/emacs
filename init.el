@@ -119,6 +119,15 @@
 ;;             (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
 ;;               (ggtags-mode 1))))
 
+;; (use-package counsel-gtags
+;;   :ensure t
+;;   :bind-keymap ("C-c g" . counsel-gtags-command-map)
+;;   :init
+;;   (add-hook 'c-mode-common-hook
+;;           (lambda ()
+;;             (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
+;;               (counsel-gtags-mode 1))))
+;;  )
 (use-package ggtags
   :ensure t
   :bind  (:map ggtags-navigation-mode-map)
@@ -127,7 +136,10 @@
           (lambda ()
             (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
               (ggtags-mode 1))))
+  ;;:config
+  ;;(setq ggtags-oversize-limit 1000000000)
   )
+
 
 (use-package company
   :ensure t
@@ -196,6 +208,11 @@
 (use-package rust-mode
   :ensure t
   )
+
+(use-package xclip
+  :ensure t
+  :init
+  (xclip-mode 1))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -208,7 +225,7 @@
    '("5a0ddbd75929d24f5ef34944d78789c6c3421aa943c15218bac791c199fc897d" "18a1d83b4e16993189749494d75e6adb0e15452c80c431aca4a867bcc8890ca9" "75b371fce3c9e6b1482ba10c883e2fb813f2cc1c88be0b8a1099773eb78a7176" "51fa6edfd6c8a4defc2681e4c438caf24908854c12ea12a1fbfd4d055a9647a3" "8dbbcb2b7ea7e7466ef575b60a92078359ac260c91fe908685b3983ab8e20e3f" "42abd324628cb258bb8bbb1fc8ebcd4920f6681f616eb1ac80c6f8853258c595" default))
  '(global-display-line-numbers-mode t)
  '(package-selected-packages
-   '(ggtags gruvbox-theme monokai-theme counsel-gtags projectile citre rust-mode wgrep clang-format company-ctags yasnippet format-all which-key use-package-hydra hydra ace-window keyfreq magit vc-msg molokai-theme company counsel-etags amx markdown-mode counsel))
+   '(xclip gruvbox-theme monokai-theme counsel-gtags projectile citre rust-mode wgrep clang-format company-ctags yasnippet format-all which-key use-package-hydra hydra ace-window keyfreq magit vc-msg molokai-theme company counsel-etags amx markdown-mode counsel))
  '(tool-bar-mode nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
