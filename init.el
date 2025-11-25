@@ -1,4 +1,4 @@
-(setq package-archives '(("gnu"    . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
+(setq package-formarchives '(("gnu"    . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
                          ("nongnu" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
                          ("melpa"  . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")))
 (package-initialize) ;; You might already have this line
@@ -7,6 +7,7 @@
 
 (global-auto-revert-mode t)                  ; 当另一程序修改了文件时，让 Emacs 及时刷新 Buffer
 
+(global-hl-line-mode t)			     ; highlight current line
 ;; cc style
 (setq c-default-style "linux"
       c-basic-offset 8
@@ -30,6 +31,12 @@
 
 ;; global hotkey
 (global-set-key (kbd "M-/") 'hippie-expand) ; 补全
+
+;; ggtags always at bottom
+(add-to-list 'display-buffer-alist
+             '("ggtags-global"
+               (display-buffer-in-side-window)
+               (side . bottom)))
 
 ;; packages
 (use-package counsel
@@ -150,6 +157,7 @@
   (setq company-idle-delay 0.3)
   (setq company-show-numbers t) ;; 给选项编号 (按快捷键 M-1、M-2 等等来进行选择).
   (setq company-selection-wrap-around t)
+  (setq company-dabbrev-downcase nil) ;; 区分大小写
   (setq company-transformers '(company-sort-by-occurrence))) ; 根据选择的频率进行排序，读者如果不喜欢可以去掉
 
 (use-package company-ctags
@@ -159,7 +167,7 @@
 
 (setq company-backends
       '(
-        (company-dabbrev company-keywords company-files company-capf)
+        (company-capf company-dabbrev-code company-keywords company-files)
         ))
 
 ;; git
@@ -186,17 +194,17 @@
   )
 
 ;; format
-(use-package format-all
-  :commands format-all-mode
-  ;;:hook (prog-mode . format-all-mode)
-  :bind (("C-c \\" . format-all-buffer))
-  :config
-  (setq-default format-all-formatters
-                '(("C"     (astyle "--mode=c"))
-                  ("Shell" (shfmt "-i" "4" "-ci"))
-		  ("Python" (ruff))
-		  ("C++" (astyle))
-		  )))
+;; (use-package format-all
+;;   :commands format-all-mode
+;;   ;;:hook (prog-mode . format-all-mode)
+;;   :bind (("C-c \\" . format-all-buffer))
+;;   :config
+;;   (setq-default format-all-formatters
+;;                 '(("C"     (astyle "--mode=c"))
+;;                   ("Shell" (shfmt "-i" "4" "-ci"))
+;; 		  ("Python" (ruff))
+;; 		  ("C++" (astyle))
+;; 		  )))
 
 ;; clang format
 (use-package clang-format
@@ -213,6 +221,19 @@
   :ensure t
   :init
   (xclip-mode 1))
+
+;; Default light theme
+(set-background-color "white")
+(set-foreground-color "black")
+
+;; initial window settings
+(setq initial-frame-alist
+      '((background-color . "honeydew")))
+
+;; subsequent window settings
+(setq default-frame-alist
+      '((background-color . "honeydew")))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -220,12 +241,13 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(column-number-mode t)
- '(custom-enabled-themes '(tango-dark))
+ '(custom-enabled-themes nil)
  '(custom-safe-themes
    '("5a0ddbd75929d24f5ef34944d78789c6c3421aa943c15218bac791c199fc897d" "18a1d83b4e16993189749494d75e6adb0e15452c80c431aca4a867bcc8890ca9" "75b371fce3c9e6b1482ba10c883e2fb813f2cc1c88be0b8a1099773eb78a7176" "51fa6edfd6c8a4defc2681e4c438caf24908854c12ea12a1fbfd4d055a9647a3" "8dbbcb2b7ea7e7466ef575b60a92078359ac260c91fe908685b3983ab8e20e3f" "42abd324628cb258bb8bbb1fc8ebcd4920f6681f616eb1ac80c6f8853258c595" default))
+ '(font-use-system-font t)
  '(global-display-line-numbers-mode t)
  '(package-selected-packages
-   '(xclip gruvbox-theme monokai-theme counsel-gtags projectile citre rust-mode wgrep clang-format company-ctags yasnippet format-all which-key use-package-hydra hydra ace-window keyfreq magit vc-msg molokai-theme company counsel-etags amx markdown-mode counsel))
+   '(xclip gruvbox-theme monokai-theme counsel-gtags projectile citre rust-mode wgrep clang-format company-ctags yasnippet which-key use-package-hydra hydra ace-window keyfreq magit vc-msg molokai-theme company counsel-etags amx markdown-mode counsel))
  '(tool-bar-mode nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
