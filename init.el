@@ -1,4 +1,4 @@
-(setq package-formarchives '(("gnu"    . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
+(setq package-archives '(("gnu"    . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
                          ("nongnu" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
                          ("melpa"  . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")))
 (package-initialize) ;; You might already have this line
@@ -37,7 +37,11 @@
              '("ggtags-global"
                (display-buffer-in-side-window)
                (side . bottom)))
-
+(use-package benchmark-init
+  :ensure t
+  :config
+  ;; To disable collection of benchmark data after init is done.
+  (add-hook 'after-init-hook 'benchmark-init/deactivate))
 ;; packages
 (use-package counsel
   :ensure t)
@@ -222,17 +226,17 @@
   :init
   (xclip-mode 1))
 
-;; Default light theme
-(set-background-color "white")
-(set-foreground-color "black")
+;; ;; Default light theme
+;; (set-background-color "white")
+;; (set-foreground-color "black")
 
-;; initial window settings
-(setq initial-frame-alist
-      '((background-color . "honeydew")))
+;; ;; ;; initial window settings
+;; ;; (setq initial-frame-alist
+;; ;;       '((background-color . "honeydew")))
 
-;; subsequent window settings
-(setq default-frame-alist
-      '((background-color . "honeydew")))
+;; ;; ;; subsequent window settings
+;; ;; (setq default-frame-alist
+      ;; '((background-color . "honeydew")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (custom-set-variables
@@ -241,20 +245,20 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(column-number-mode t)
- '(custom-enabled-themes nil)
+ '(custom-enabled-themes '(tango-dark))
  '(custom-safe-themes
-   '("5a0ddbd75929d24f5ef34944d78789c6c3421aa943c15218bac791c199fc897d" "18a1d83b4e16993189749494d75e6adb0e15452c80c431aca4a867bcc8890ca9" "75b371fce3c9e6b1482ba10c883e2fb813f2cc1c88be0b8a1099773eb78a7176" "51fa6edfd6c8a4defc2681e4c438caf24908854c12ea12a1fbfd4d055a9647a3" "8dbbcb2b7ea7e7466ef575b60a92078359ac260c91fe908685b3983ab8e20e3f" "42abd324628cb258bb8bbb1fc8ebcd4920f6681f616eb1ac80c6f8853258c595" default))
+   '("8363207a952efb78e917230f5a4d3326b2916c63237c1f61d7e5fe07def8d378" "5aedf993c7220cbbe66a410334239521d8ba91e1815f6ebde59cecc2355d7757" "5a0ddbd75929d24f5ef34944d78789c6c3421aa943c15218bac791c199fc897d" "18a1d83b4e16993189749494d75e6adb0e15452c80c431aca4a867bcc8890ca9" "75b371fce3c9e6b1482ba10c883e2fb813f2cc1c88be0b8a1099773eb78a7176" "51fa6edfd6c8a4defc2681e4c438caf24908854c12ea12a1fbfd4d055a9647a3" "8dbbcb2b7ea7e7466ef575b60a92078359ac260c91fe908685b3983ab8e20e3f" "42abd324628cb258bb8bbb1fc8ebcd4920f6681f616eb1ac80c6f8853258c595" default))
  '(font-use-system-font t)
  '(global-display-line-numbers-mode t)
  '(package-selected-packages
-   '(xclip gruvbox-theme monokai-theme counsel-gtags projectile citre rust-mode wgrep clang-format company-ctags yasnippet which-key use-package-hydra hydra ace-window keyfreq magit vc-msg molokai-theme company counsel-etags amx markdown-mode counsel))
+   '(benchmark-init xclip gruvbox-theme monokai-theme counsel-gtags projectile citre rust-mode wgrep clang-format company-ctags yasnippet which-key use-package-hydra hydra ace-window keyfreq magit vc-msg molokai-theme company counsel-etags amx markdown-mode counsel))
  '(tool-bar-mode nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "Monaco for Powerline" :foundry "PfEd" :slant normal :weight regular :height 113 :width normal)))))
+ '(default ((t (:family "Maple Mono Normal NL" :foundry "    " :slant normal :weight medium :height 113 :width normal)))))
 
 (desktop-save-mode 1)
 (put 'narrow-to-region 'disabled nil)
