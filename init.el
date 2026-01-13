@@ -7,7 +7,7 @@
 
 (global-auto-revert-mode t)                  ; 当另一程序修改了文件时，让 Emacs 及时刷新 Buffer
 
-(global-hl-line-mode t)			     ; highlight current line
+;;(global-hl-line-mode t)			     ; highlight current line
 ;; cc style
 (setq c-default-style "linux"
       c-basic-offset 8
@@ -139,6 +139,11 @@
 ;;             (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
 ;;               (counsel-gtags-mode 1))))
 ;;  )
+
+(defface my-ggtags-modeline-face
+  '((t :foreground "magenta" :weight bold))
+  "Face for ggtags project name in mode line.")
+
 (use-package ggtags
   :ensure t
   :bind  (:map ggtags-navigation-mode-map)
@@ -148,8 +153,27 @@
             (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
               (ggtags-mode 1))))
   ;;:config
-  ;;(setq ggtags-oversize-limit 1000000000)
+  ;;(setq ggtags-oversize-limit 104857600)
+  (setq ggtags-sort-by-nearness t)
+  (setq ggtags-update-on-save t)
+  (setq ggtags-use-sqlite3 t)
+  (setq ggtags-use-idutils t)
+  (setq ggtags-mode-line-project-name
+      '("[" (:eval (let ((name (if (stringp ggtags-project-root)
+                                  (file-name-nondirectory
+                                   (directory-file-name ggtags-project-root))
+                                "?")))
+                    (propertize
+                     name 
+                     'face 'my-ggtags-modeline-face  ; <--- 这里改成了自定义的 Face
+                     'help-echo (if (stringp ggtags-project-root)
+                                    (concat "mouse-1 to visit " ggtags-project-root)
+                                  "mouse-1 to set project")
+                     'mouse-face 'mode-line-highlight
+                     'keymap ggtags-mode-line-project-keymap)))
+        "]"))
   )
+
 
 
 (use-package company
@@ -238,7 +262,7 @@
  '(font-use-system-font t)
  '(global-display-line-numbers-mode t)
  '(package-selected-packages
-   '(benchmark-init xclip gruvbox-theme monokai-theme counsel-gtags projectile citre rust-mode wgrep clang-format company-ctags yasnippet which-key use-package-hydra hydra ace-window keyfreq magit vc-msg molokai-theme company counsel-etags amx markdown-mode counsel))
+   '(doom-modeline benchmark-init xclip gruvbox-theme monokai-theme counsel-gtags projectile rust-mode wgrep clang-format company-ctags yasnippet which-key use-package-hydra hydra ace-window keyfreq magit vc-msg molokai-theme company counsel-etags amx markdown-mode counsel))
  '(tool-bar-mode nil))
 
 (desktop-save-mode 1)
@@ -247,15 +271,13 @@
 
 (put 'narrow-to-region 'disabled nil)
 
-;; custom modus theme
-(require-theme 'modus-themes)
-(setq modus-themes-italic-constructs t
-      modus-themes-bold-constructs nil)
-(load-theme 'modus-vivendi t)
+
+(load-theme 'tango-dark t)
+
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "Maple Mono Normal NL" :foundry "    " :slant normal :weight medium :height 113 :width normal))))
- '(modus-themes-hl-line ((t (:extend t :background "gray25"))) t))
+ '(default ((t (:family "Maple Mono Normal NL" :foundry "    " :slant normal :weight medium :height 113 :width normal)))))
+
