@@ -1,0 +1,87 @@
+#!/bin/bash
+
+# --- 路径配置 ---
+BARE_GIT_DIR="/root/linux-4.19/"
+WORK_SPACE="/root/linux-4.19-build"
+DOCKER_IMAGE="b07a0622e863"
+
+# 获取 CPU 总核心数
+NPROC_ALL=$(nproc)
+
+# 计算一半的核心数。如果只有 1 核，则强制设为 1，防止出现 -j 0
+JOBS=$(( NPROC_ALL / 2 ))
+[ "$JOBS" -lt 1 ] && JOBS=1
+
+echo ">>>> [Resources] 检测到总核心数: $NPROC_ALL，编译将使用: $JOBS"
+
+# --- 1. 获取推送信息 ---
+# 格式: <旧哈希> <新哈希> <引用全名>
+read oldrev newrev refname
+
+# 提取名称 (例如: refs/heads/main -> main, refs/tags/v1.0 -> v1.0)
+OBJECT_NAME=$(basename $refname)
+
+echo ">>>> [Git Hook] 检出目标: $OBJECT_NAME"
+
+# --- 2. 同步代码到工作区 ---
+# 确保工作区存在并关联了裸仓库
+if [ ! -d "$WORK_SPACE/.git" ]; then
+    echo ">>>> [Init] 首次同步，正在建立共享克隆..."
+    git clone --shared "$GIT_DIR" "$WORK_SPACE"
+fi
+
+unset GIT_DIR
+
+cd "$WORK_SPACE"
+echo ">>>> 当前目录: $(pwd)"
+
+git fetch origin --tags -f   # 强制同步所有引用和标签
+git checkout -f "$OBJECT_NAME"
+git reset --hard "$newrev"   # 确保工作区严格指向推送的内容
+
+# --- 4. 架构判断 (新增) ---
+# 默认值
+TARGET_ARCH="x86"
+TARGET_IMAGE="bzImage"
+if grep -q "CONFIG_ARM64=y" .config 2>/dev/null ; then
+    # 如果是编译 ARM64
+    TARGET_ARCH="arm64"
+    TARGET_IMAGE="Image.gz"
+fi
+
+echo ">>>> [Arch] 最终决策: ARCH=$TARGET_ARCH, IMAGE=$TARGET_IMAGE"
+
+# --- 5. 根据推送类型判断策略 ---
+if [[ "$refname" == refs/tags/* ]]; then
+	# 【发布模式】: 推送的是 Tag
+    echo ">>>> [Strategy] 检测到标签推送，启动正式发布编译 (Full Build)..."
+
+    # 执行深度编译（清理旧产物，生成最终包）
+    BUILD_CMD="set -eo pipefail;time ./scripts/buildrpm.sh --baseonly --without-kabi-check  -l $OBJECT_NAME 2>&1| tee build.log"
+    MODE="RELEASE"
+else
+    # 【验证模式】: 推送的是普通分支
+    echo ">>>> [Strategy] 检测到分支推送，启动快速增量编译 (Incremental)..."
+    BUILD_CMD="set -eo pipefail;make olddefconfig; make -j $JOBS $TARGET_IMAGE 2>&1 | tee build.log"
+    MODE="DEV"
+fi
+
+# --- 6. 唤起 Docker 执行编译 ---
+echo ">>>> [Docker] 正在启动容器进行 $MODE 模式构建..."
+
+# 3. 运行 Docker 编译
+docker run --rm \
+    -v ${WORK_SPACE}:${WORK_SPACE} \
+    -v ${BARE_GIT_DIR}:${BARE_GIT_DIR} \
+    -w ${WORK_SPACE} \
+    ${DOCKER_IMAGE} \
+    /bin/bash -c "$BUILD_CMD"
+
+# --- 5. 结果反馈 ---
+if [ $? -eq 0 ]; then
+    echo ">>>> [Success] $OBJECT_NAME 编译完成！"
+    [ "$MODE" == "RELEASE" ] && echo ">>>> 产物路径: $WORK_SPACE/rpmbuild"
+else
+    echo ">>>> [Error] 编译失败，请检查上方 Docker 日志。"
+    exit 1
+fi
