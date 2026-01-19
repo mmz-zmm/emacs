@@ -40,7 +40,9 @@ common:\
 	:skip=arch/riscv/,arch/s390/,arch/sh/,arch/sparc/,arch/um/,arch/xtensa/:\
 	:skip=sound/:\
 	:skip=drivers/:\
-	:skip=tools/:
+	:skip=tools/:\
+	:skip=security/:\
+	:skip=rpmbuild/:
 gtags:\
 	:tc=common:\
 	:langmap=c\:.c.h,yacc\:.y,asm\:.s.S,java\:.java,cpp\:.c++.cc.cpp.cxx.hxx.hpp.C.H,php\:.php.php3.phtml:
